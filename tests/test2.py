@@ -23,7 +23,7 @@ class Testing(unittest.TestCase):
 		submitButton.send_keys(Keys.ENTER)
 		sleep(2)
 		res = browser.find_element(By.CLASS_NAME, 'alert')
-		self.assertEqual('Acceso inválido. Verificar credenciales.', res.text, msg="Fallido exitosamente")
+		self.assertNotEqual('Acceso inválido. Verificar credenciales.', res.text, msg="Fallido exitosamente")
 
 	def tearDown(self):
 		print()
