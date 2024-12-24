@@ -1,22 +1,58 @@
 pipeline {
     agent any
-
+    triggers {
+        // Ejecutar el pipeline al hacer push a la rama develop
+        pollSCM('H/5 * * * *')  // Revisa cambios cada 5 minutos
+    }
+    environment {
+        VENV = 'venv'
+    }
     stages {
-        stage('Compilacion') {
+        stage('Setup') {
             steps {
-                echo 'Paso 1'
+                script {
+                    sh '''
+                    python -m venv $VENV
+                    source $VENV/bin/activate
+                    pip install -r requirements.txt
+                    '''
+                }
             }
         }
-        stage('Test') {
+        stage('Run Unit Tests') {
             steps {
-                echo 'Paso 2'
+                script {
+                    sh '''
+                    source $VENV/bin/activate
+                    pytest --junitxml=results.xml
+                    '''
+                }
+            }
+            post {
+                always {
+                    junit 'results.xml'
+                }
             }
         }
-        stage('Final') {
+        stage('Run Selenium Tests') {
             steps {
-                echo 'Paso 3'
-                exit 1
+                script {
+                    sh '''
+                    source $VENV/bin/activate
+                    pytest tests/
+                    '''
+                }
             }
+        }
+    }
+    post {
+        failure {
+            mail to: 'cnicolasadolfo@gmail.com',
+                 subject: 'Build Failed: ${env.JOB_NAME}',
+                 body: "El build ${env.BUILD_NUMBER} falló. Revisa Jenkins para más detalles."
+        }
+        success {
+            echo 'Build succeeded!'
         }
     }
 }
