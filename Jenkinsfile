@@ -4,7 +4,7 @@ pipeline {
         stage('Setup') {
             steps {                
                 script {
-                    sh '''
+                    bat '''
                     python -m pip install --upgrade pip &&
                     pip install -r requirements.txt
                     '''
@@ -14,7 +14,7 @@ pipeline {
         stage('Run Unit Tests') {
             steps {     
                 script{
-                    sh '''
+                    bat '''
                     pytest --junitxml=results.xml 
                     '''
                 }                                               
@@ -29,7 +29,7 @@ pipeline {
         stage('Run Selenium Tests') {
             steps {
                 script{
-                    sh '''
+                    bat '''
                     pytest tests/
                     '''
                 }
@@ -39,9 +39,15 @@ pipeline {
     }
     post {
         failure {
-            mail to: 'cnicolasadolfo@gmail.com',
-                 subject: 'Build Failed: ${env.JOB_NAME}',
-                 body: "El build ${env.BUILD_NUMBER} falló. Revisa Jenkins para más detalles."
+            emailext (
+                subject: "Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
+                <h3>El build <b>#${env.BUILD_NUMBER}</b> falló.</h3>
+                <p>Revisa los detalles en Jenkins: ${env.BUILD_URL}</p>
+                """,
+                to: "cnicolasadolfo@gmail.com",
+                recipientProviders: [[$class: 'CulpritsRecipientProvider'], [$class: 'DevelopersRecipientProvider']]
+            )
         }
         success {
             echo 'Build succeeded!'
