@@ -9,22 +9,14 @@ pipeline {
     }
     stages {
         stage('Setup') {
-            steps {
-                script {
-                    sh '''                  
-                    pip install -r requirements.txt
-                    '''
-                }
+            steps {                
+                python -m pip install --upgrade pip
+                pip install -r requirements.txt                             
             }
         }
         stage('Run Unit Tests') {
-            steps {
-                script {
-                    sh '''
-                    source $VENV/bin/activate
-                    pytest --junitxml=results.xml
-                    '''
-                }
+            steps {                                                    
+                pytest --junitxml=results.xml                                
             }
             post {
                 always {
@@ -34,12 +26,7 @@ pipeline {
         }
         stage('Run Selenium Tests') {
             steps {
-                script {
-                    sh '''
-                    source $VENV/bin/activate
-                    pytest tests/
-                    '''
-                }
+                pytest tests/
             }
         }
     }
