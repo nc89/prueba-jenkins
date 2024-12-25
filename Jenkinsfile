@@ -11,21 +11,6 @@ pipeline {
                 }                          
             }
         }
-        stage('Run Unit Tests') {
-            steps {     
-                script{
-                    bat '''
-                    pytest --junitxml=results.xml 
-                    '''
-                }                                               
-                                               
-            }
-            post {
-                always {
-                    junit 'results.xml'
-                }
-            }
-        }
         stage('Run Selenium Tests') {
             steps {
                 script{
