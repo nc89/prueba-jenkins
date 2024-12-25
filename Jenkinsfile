@@ -11,8 +11,13 @@ pipeline {
             }
         }
         stage('Run Unit Tests') {
-            steps {                                                    
-                pytest --junitxml=results.xml                                
+            steps {     
+                script{
+                    sh '''
+                    pytest --junitxml=results.xml 
+                    '''
+                }                                               
+                                               
             }
             post {
                 always {
@@ -22,7 +27,12 @@ pipeline {
         }
         stage('Run Selenium Tests') {
             steps {
-                pytest tests/
+                script{
+                    sh '''
+                    pytest tests/
+                    '''
+                }
+                
             }
         }
     }
