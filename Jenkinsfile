@@ -8,10 +8,10 @@ pipeline {
                     python -m pip install --upgrade pip
                     pip install -r requirements.txt
                     '''
-                }
-                                         
+                }                                         
             }
             post{
+                always{
                 // Notificar que el estado es "Pending"
                 step([$class: 'GitHubCommitStatusSetter',
                       contextSource: [$class: 'ManuallyEnteredCommitContextSource', context: 'Setup'],
@@ -20,6 +20,8 @@ pipeline {
                           [$class: 'AnyBuildResult', state: 'FAILURE', message: 'Some setup failed.']
                       ]]
                 ]) 
+                }
+                
             }
         }
         stage('Run Selenium Tests') {
