@@ -14,7 +14,7 @@ pipeline {
                     sh '''
                     python -m pip install --upgrade pip
                     python -m venv $VENV
-                    source $VENV/bin/activate
+                    $VENV/bin/activate
                     pip install -r requirements.txt
                     '''
                 }
