@@ -9,13 +9,17 @@ pipeline {
                     pip install -r requirements.txt
                     '''
                 }
+                                         
+            }
+            post{
                 // Notificar que el estado es "Pending"
                 step([$class: 'GitHubCommitStatusSetter',
                       contextSource: [$class: 'ManuallyEnteredCommitContextSource', context: 'Setup'],
                       statusResultSource: [$class: 'ConditionalStatusResultSource', results: [
-                          [$class: 'AnyBuildResult', state: 'PENDING', message: 'Setting up dependencies.']
+                          [$class: 'AnyBuildResult', state: 'SUCCESS', message: 'Setup finish.'],
+                          [$class: 'AnyBuildResult', state: 'FAILURE', message: 'Some setup failed.']
                       ]]
-                ])                          
+                ]) 
             }
         }
         stage('Run Selenium Tests') {
