@@ -12,9 +12,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    python -m pip install --upgrade pip
-                    python -m venv $VENV
-                    $VENV/bin/activate
+                    python -m pip install --upgrade pip                    
                     pip install -r requirements.txt
                     '''
                 }
