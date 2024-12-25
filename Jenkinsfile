@@ -1,36 +1,39 @@
 pipeline {
+    agent any
     stages {
         stage('Setup') {
             steps {                
                 script {
-                    sh '''
+                    bat '''
                     python -m pip install --upgrade pip
                     pip install -r requirements.txt
                     '''
                 }                          
             }
         }
-        stage('Run Unit Tests') {
-            steps {                                                    
-                pytest --junitxml=results.xml                                
-            }
-            post {
-                always {
-                    junit 'results.xml'
-                }
-            }
-        }
         stage('Run Selenium Tests') {
             steps {
-                pytest tests/
+                script{
+                    bat '''
+                    pytest tests/
+                    '''
+                }
+                
             }
         }
     }
     post {
         failure {
-            mail to: 'cnicolasadolfo@gmail.com',
-                 subject: 'Build Failed: ${env.JOB_NAME}',
-                 body: "El build ${env.BUILD_NUMBER} falló. Revisa Jenkins para más detalles."
+            emailext (
+                subject: "Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
+                El build #${env.BUILD_NUMBER} falló.
+                Revisa los detalles en Jenkins: ${env.BUILD_URL}
+                NICOLAS ADOLFO CARDENAS PATIÑO
+                """,
+                to: "cnicolasadolfo@gmail.com",
+                recipientProviders: [[$class: 'CulpritsRecipientProvider'], [$class: 'DevelopersRecipientProvider']]
+            )
         }
         success {
             echo 'Build succeeded!'
