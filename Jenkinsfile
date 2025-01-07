@@ -28,7 +28,8 @@ pipeline {
             steps {
                 script{
                     bat '''
-                    pytest tests/
+                    exit 1
+                    pytest tests/                    
                     '''
                 }                
             }
